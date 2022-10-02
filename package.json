@@ -1,8 +1,14 @@
 {
     "name": "lit-events-and-attributes",
-    "displayName": "lit-events-and-attributes",
-    "description": "",
-    "version": "0.0.1",
+    "displayName": "Type Detection for Lit HTML Events and Attributes",
+    "description": "Add type checking for attribute types vs. javascript value types and automatically infer event delegate types",
+    "version": "0.0.6",
+    "publisher": "KyoshiroKokujou",
+    "repository": {
+        "url": "https://github.com/kokujou",
+        "directory": " lit-events-and-attributes",
+        "type": "Git"
+    },
     "engines": {
         "vscode": "^1.71.0"
     },
@@ -13,14 +19,6 @@
         "onLanguage:javascript"
     ],
     "main": "./extension.js",
-    "contributes": {
-        "commands": [
-            {
-                "command": "lit-events-and-attributes.helloWorld",
-                "title": "Hello World"
-            }
-        ]
-    },
     "scripts": {
         "lint": "eslint .",
         "pretest": "npm run lint",
@@ -29,7 +27,7 @@
     "devDependencies": {
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
-        "@types/node": "16.x",
+        "@types/node": "^16.11.62",
         "@types/vscode": "^1.71.0",
         "@vscode/test-electron": "^2.1.5",
         "eslint": "^8.20.0",

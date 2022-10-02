@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const AttributeValue = require('./attribute-value').AttributeValue;
+const Utils = require('./utils');
 
 /**
  * @typedef {Object} CreateDiagnosticOptions
@@ -13,11 +14,6 @@ const AttributeValue = require('./attribute-value').AttributeValue;
  */
 
 /** @type {vscode.Diagnostic[]} */ var errors = [];
-
-/** @param {string} input */
-function escapeRegExp(input) {
-    return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
 
 /**
  * @param {CreateDiagnosticOptions} options
@@ -49,7 +45,7 @@ function writeError(options) {
 function undefinedAttributeError(document, attribute) {
     writeError({
         message: `the attribute '${attribute[0]}' is not defined, using '.attribute' data binding will be ignored`,
-        search: new RegExp(escapeRegExp(attribute[0])),
+        search: new RegExp(Utils.escapeRegExp(attribute[0])),
         start: attribute[1].parentNode.start,
         end: attribute[1].parentNode.startTagEnd,
         severity: vscode.DiagnosticSeverity.Warning,
@@ -66,7 +62,7 @@ function undefinedAttributeError(document, attribute) {
 function attributeTypeMismatch(document, attribute, requestedType, providedType) {
     writeError({
         message: `the attribute ${attribute[0]} expects a value of type ${requestedType} but was provided with type ${providedType}.`,
-        search: new RegExp(escapeRegExp(attribute[0]) + '[ ]*=[ ]*' + escapeRegExp(attribute[1].valueText)),
+        search: new RegExp(Utils.escapeRegExp(attribute[0]) + '[ ]*=[ ]*' + Utils.escapeRegExp(attribute[1].valueText)),
         start: attribute[1].parentNode.start,
         end: attribute[1].parentNode.startTagEnd,
         document: document,
@@ -74,7 +70,8 @@ function attributeTypeMismatch(document, attribute, requestedType, providedType)
     });
 }
 
-function flush() {
+function flushErrors() {
+    if (errors.length == 0) return;
     var result = [...errors];
     errors = [];
     return result;
@@ -83,5 +80,5 @@ function flush() {
 module.exports = {
     undefinedAttributeError,
     attributeTypeMismatch,
-    flush,
+    flushErrors,
 };

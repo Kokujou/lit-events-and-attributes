@@ -1,13 +1,37 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "ES2020",
-		"checkJs": true,  /* Typecheck .js files. */
-		"lib": [
-			"ES2020"
-		]
-	},
-	"exclude": [
-		"node_modules"
-	]
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "esnext",
+        "checkJs": true,
+        "sourceMap": false,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "watch": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "allowUnreachableCode": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "moduleResolution": "node"
+    },
+    "include": ["**/*.js"],
+    "exclude": [
+        "node_modules/**",
+        "**/*.bundled.js",
+        "**/exports.js",
+        "./rollup.config.js",
+        "node_modules/**",
+        "<node_internals>/**/*.js",
+        "templates/**",
+        "node_modules",
+        "./node_modules",
+        "./node_modules/*",
+        "./node_modules/@types/node/index.d.ts",
+        "**/*.stories*",
+        "./.storybook/**",
+        "**/*.example*.js"
+    ],
+
+    "compileOnSave": true
 }

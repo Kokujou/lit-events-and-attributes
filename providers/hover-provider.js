@@ -20,6 +20,7 @@ function createHoverProvider(program) {
                 );
 
                 var quickInfo = languageService.getQuickInfoAtPosition(document.fileName, offset + textLengthAdded);
+                if (!quickInfo) return null;
                 var startPosition = document.positionAt(quickInfo.textSpan.start);
                 var endPosition = document.positionAt(quickInfo.textSpan.start + quickInfo.textSpan.length);
                 return {

@@ -10,12 +10,15 @@ function inferJsDocForEventAtOffset(document, offset) {
     var htmlNodes = analyzeHTMLDocument(document);
     var documentText = document.getText();
     var targetNode = htmlNodes.find((x) => x.start < offset && x.startTagEnd > offset);
+    if (!targetNode) return null;
     var targetNodeString = documentText.slice(targetNode.start, targetNode.startTagEnd);
 
     var attributeRange = null;
     var foundAttribute = null;
     for (var attribute of Object.entries(targetNode.attributes)) {
-        var match = targetNodeString.match(escapeRegExp(attribute[0]) + '[ ]*=[ ]*' + escapeRegExp(attribute[1]));
+        var match = targetNodeString.match(
+            escapeRegExp(attribute[0] || '') + '[ ]*=[ ]*' + escapeRegExp(attribute[1] || '')
+        );
         if ((match?.length || 0) <= 0) continue;
 
         var attributeStart = targetNode.start + match.index;

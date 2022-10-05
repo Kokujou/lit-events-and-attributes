@@ -115,13 +115,11 @@ function init(modules) {
      * @param {ts.server.PluginCreateInfo} info
      */
     function create(info) {
-        info.project.projectService.logger.info("I'm getting set up now! Check the log for this message.");
         /** @type {ts.LanguageService} */ const proxy = Object.create(null);
         for (let k of Object.keys(info.languageService)) {
             const x = info.languageService[k];
             proxy[k] = (...args) => x.apply(info.languageService, args);
         }
-        info.project.projectService.logger.info('fluffy entering quick info');
         proxy.getQuickInfoAtPosition = (fileName, position) => {
             try {
                 var result = getLanguageServiceTransformedAt(fileName, position, proxy.getProgram());

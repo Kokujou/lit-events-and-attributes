@@ -1,9 +1,5 @@
-const { existsSync, readFileSync, exists } = require('fs');
+const { existsSync, readFileSync } = require('fs');
 const { ScriptSnapshot, sys, getDefaultLibFileName } = require('typescript');
-const { TextDocument } = require('vscode-languageserver-textdocument');
-const { analyzeHTMLDocument } = require('./analyze.js');
-const { nativeEventMap } = require('./native-events.js');
-const { escapeRegExp } = require('./utils.js');
 
 /**
  * @param {import('typescript').Program} program
@@ -13,7 +9,7 @@ function getLanguageServiceHostFromProgram(program, scriptFileMap) {
     return {
         getCompilationSettings: () => program.getCompilerOptions(),
         getScriptFileNames: () => program.getSourceFiles().map((x) => x.fileName),
-        getScriptVersion: (fileName) => '1',
+        getScriptVersion: () => '1',
         getScriptSnapshot: (fileName) => {
             var overriddenFile = scriptFileMap[fileName] || scriptFileMap[fileName.replaceAll('/', '\\')];
             if (overriddenFile) {

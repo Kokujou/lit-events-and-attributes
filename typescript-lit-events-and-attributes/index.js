@@ -1,4 +1,3 @@
-const { info } = require('console');
 const { readFileSync } = require('fs');
 const { createLanguageService } = require('typescript');
 const { TextDocument } = require('vscode-languageserver-textdocument');
@@ -7,6 +6,9 @@ const { getLanguageServiceHostFromProgram } = require('./custom-language-service
 const { nativeEventMap } = require('./native-events.js');
 const { inferJsDocForEventAtOffset } = require('./parser.js');
 const { escapeRegExp } = require('./utils.js');
+
+const CommentIdentifier = 'crLLhgJ2zR';
+const CommentRegex = new RegExp(`\\/\\*\\* \\@type {\\(e\\:[a-zA-Z<>]*\\)=>any} ${CommentIdentifier} \\*\\/`, 'g');
 
 /**
  * @param {[string,string]} attribute
@@ -35,18 +37,18 @@ function readTransformedText(oldText) {
 
     var newText = '';
     var lastIndex = 0;
-    var sortedNodes = htmlNodes.sort((a, b) => (a.parent.start < b.parent.start ? 1 : -1));
+    var sortedNodes = htmlNodes.sort((a, b) => (a.start < b.start ? -1 : 1));
     for (var node of sortedNodes) {
         var relevantAttributes = Object.entries(node.attributes).filter((x) => isEventAttribute(x));
         if (!relevantAttributes || relevantAttributes.length <= 0) continue;
-        newText += oldText.slice(0, node.start);
+        newText += oldText.slice(lastIndex, node.start);
         var nodeText = oldText.slice(node.start, node.startTagEnd);
         for (var attribute of relevantAttributes) {
             var eventTypeName = nativeEventMap[attribute[0].slice('@'.length)];
             if (!eventTypeName) {
                 eventTypeName = 'CustomEvent<any>';
             }
-            var jsDocComment = `/** @type {(e:${eventTypeName})=>void} */`;
+            var jsDocComment = `/** @type {(e:${eventTypeName})=>any} ${CommentIdentifier} */`;
 
             var newAttributeValue = '"${' + jsDocComment + attribute[1].slice('"${'.length);
             nodeText = nodeText.replace(
@@ -58,6 +60,8 @@ function readTransformedText(oldText) {
         newText += nodeText;
         lastIndex = node.startTagEnd;
     }
+
+    newText += oldText.slice(lastIndex);
 
     return newText;
 }
@@ -85,10 +89,26 @@ function getTransformedLanguageService(fileName, program) {
 }
 
 /**
+ *
+ * @param {import('typescript').Diagnostic[]} diags
+ */
+function translateDiagnosticsOffset(diags) {
+    for (var diag of diags) {
+        var textBefore = diag.file.text.slice(0, diag.start);
+        var previousComments = Array.from(textBefore.matchAll(CommentRegex));
+        for (var comment of previousComments) {
+            for (var whatever of comment) diag.start -= whatever.length;
+        }
+    }
+    return diags;
+}
+
+/**
  * @param { { typescript: typeof import('typescript/lib/tsserverlibrary') }} modules
  * @returns
  */
 function init(modules) {
+    // @ts-ignore  //
     const ts = modules.typescript;
 
     /**
@@ -155,6 +175,24 @@ function init(modules) {
          * next approach: get all diagnostics, check the offset they're started,
          * check if a replacement can be done and ignore it if yes.
          */
+
+        proxy.getSemanticDiagnostics = (fileName) => {
+            var service = getTransformedLanguageService(fileName, proxy.getProgram());
+            var diags = service.getSemanticDiagnostics(fileName);
+            return translateDiagnosticsOffset(diags);
+        };
+
+        proxy.getSyntacticDiagnostics = (fileName) => {
+            var service = getTransformedLanguageService(fileName, proxy.getProgram());
+            var diags = service.getSyntacticDiagnostics(fileName);
+            return translateDiagnosticsOffset(diags);
+        };
+
+        proxy.getSuggestionDiagnostics = (fileName) => {
+            var service = getTransformedLanguageService(fileName, proxy.getProgram());
+            var diags = service.getSuggestionDiagnostics(fileName);
+            return translateDiagnosticsOffset(diags);
+        };
 
         return proxy;
     }

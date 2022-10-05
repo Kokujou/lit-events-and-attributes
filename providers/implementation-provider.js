@@ -15,15 +15,24 @@ function createImplementationProvider(program) {
                 var offset = document.offsetAt(position);
                 var oldText = document.getText();
                 var newText = inferJsDocForEventAtOffset(document, offset);
+                if (!newText) return [];
                 var textLengthAdded = newText.length - oldText.length;
                 var languageService = createLanguageService(
                     getLanguageServiceHostFromProgram(program, Object.fromEntries([[document.fileName, newText]]))
                 );
 
                 return languageService
-                    .getCompletionsAtPosition(document.fileName, offset + textLengthAdded, {})
-                    .entries.map((x) => new CompletionItem(x.name, convertKind(x.kind)))
-                    .filter((x) => x.kind == CompletionItemKind.Method || x.kind == CompletionItemKind.Field);
+                    .getImplementationAtPosition(document.fileName, offset + textLengthAdded)
+                    .map((x) => {
+                        return {
+                            range: x.textSpan,
+                            targetRange: x.contextSpan,
+                            targetUri: x.fileName,
+                            uri: x.originalFileName,
+                            targetSelectionRange: x.originalContextSpan,
+                            originSelectionRange: x.originalTextSpan,
+                        };
+                    });
             } catch (err) {
                 console.error(err);
             }

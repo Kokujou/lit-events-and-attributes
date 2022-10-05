@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "esnext",
+        "checkJs": true,
+        "sourceMap": false,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "watch": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "allowUnreachableCode": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "moduleResolution": "node"
+    },
+    "include": ["**/*.js"],
+    "exclude": [
+        "**/*.bundled.js",
+        "**/exports.js",
+        "<node_internals>/**/*.js",
+        "templates/**",
+        "**/node_modules/**",
+        "**/*.stories*",
+        "./.storybook/**",
+        "**/*.example*.js",
+        "example"
+    ],
+
+    "compileOnSave": true
+}

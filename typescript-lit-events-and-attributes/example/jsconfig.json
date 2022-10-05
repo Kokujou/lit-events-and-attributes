@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        // This matches the package name given in this package.json
+        "plugins": [
+            {
+                "name": "tsserver-plugin"
+            }
+        ],
+
+        "module": "esnext",
+        "target": "esnext",
+        "allowJs": true,
+        "checkJs": true,
+        "sourceMap": false,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "watch": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "allowUnreachableCode": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "./out",
+        "preserveWatchOutput": true
+    },
+    "include": ["**/*.js"],
+    "exclude": [
+        "node_modules/**",
+        "**/*.bundled.js",
+        "**/exports.js",
+        "./rollup.config.js",
+        "node_modules/**",
+        "<node_internals>/**/*.js",
+        "templates/**",
+        "node_modules",
+        "./node_modules",
+        "./node_modules/*",
+        "./node_modules/@types/node/index.d.ts",
+        "**/*.stories*",
+        "./.storybook/**",
+        "**/*.example*.js"
+    ],
+
+    "compileOnSave": true
+}

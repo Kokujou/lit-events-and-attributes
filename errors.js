@@ -7,10 +7,10 @@ const Utils = require('./utils');
  * @property {vscode.TextDocument} document
  * @property {string} message
  * @property {vscode.DiagnosticSeverity} severity
- * @property {RegExp} search
  * @property {number} start
  * @property {number} end
- * @property {string} [code]
+ * @property {RegExp} [search]
+ * @property {number} [code]
  */
 
 /** @type {vscode.Diagnostic[]} */ var errors = [];
@@ -20,13 +20,14 @@ const Utils = require('./utils');
  */
 function writeError(options) {
     try {
-        var match = options.document.getText().slice(options.start, options.end).match(options.search);
-        var start = match.index + options.start;
-
-        var range = new vscode.Range(
-            options.document.positionAt(start),
-            options.document.positionAt(start + match[0].length)
-        );
+        var start = options.start;
+        var end = options.end;
+        if (options.search) {
+            var match = options.document.getText().slice(options.start, options.end).match(options.search);
+            start = match.index + options.start;
+            end = start + match[0].length;
+        }
+        var range = new vscode.Range(options.document.positionAt(start), options.document.positionAt(end));
         errors.push({
             message: options.message,
             range: range,
@@ -51,6 +52,23 @@ function undefinedAttributeError(document, attribute) {
         severity: vscode.DiagnosticSeverity.Warning,
         document: document,
     });
+}
+
+/**
+ *
+ * @param {import('vscode').TextDocument} document
+ * @param {import('typescript').Diagnostic[]} diags
+ */
+function writeTypescriptDiagnostics(document, diags) {
+    for (var diag of diags)
+        writeError({
+            document: document,
+            message: diag.messageText.toString(),
+            start: diag.start,
+            end: diag.start + diag.length,
+            severity: vscode.DiagnosticSeverity.Error,
+            code: diag.code,
+        });
 }
 
 /**
@@ -81,4 +99,5 @@ module.exports = {
     undefinedAttributeError,
     attributeTypeMismatch,
     flushErrors,
+    writeTypescriptDiagnostics,
 };

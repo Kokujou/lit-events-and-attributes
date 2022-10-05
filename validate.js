@@ -1,5 +1,6 @@
+const { createTextChangeRange, createTextSpan } = require('typescript');
 const { analyzeHTMLDocument, analyzeAttributeCollection } = require('./analyze.js');
-const { undefinedAttributeError, attributeTypeMismatch } = require('./errors.js');
+const { undefinedAttributeError, attributeTypeMismatch, writeTypescriptDiagnostics } = require('./errors.js');
 const { getNodesRecurse } = require('./typescript.extension.js');
 
 /**
@@ -47,6 +48,17 @@ function validateDocument(document, program, componentTypeMap) {
             validateAttribute(document, componentTypeMap, attributeCollection.parent, attribute, checker);
         }
     }
+
+    scriptFile.update(
+        document.getText(),
+        createTextChangeRange(createTextSpan(0, document.getText().length), document.getText().length)
+    );
+
+    var diagnostics = program
+        .getSyntacticDiagnostics(scriptFile)
+        .concat(program.getSemanticDiagnostics(scriptFile))
+        .concat(program.getSuggestionDiagnostics(scriptFile));
+    writeTypescriptDiagnostics(document, diagnostics);
 }
 
 module.exports = { validateAttribute, validateDocument };

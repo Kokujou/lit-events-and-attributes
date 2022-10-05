@@ -2,7 +2,7 @@
     "name": "lit-events-and-attributes",
     "displayName": "Type Detection for Lit HTML Events and Attributes",
     "description": "Add type checking for attribute types vs. javascript value types and automatically infer event delegate types",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "publisher": "KyoshiroKokujou",
     "repository": {
         "url": "https://github.com/kokujou",
@@ -33,7 +33,7 @@
         "eslint": "^8.20.0",
         "glob": "^8.0.3",
         "mocha": "^10.0.0",
-        "typescript": "^4.7.4"
+        "typescript": "latest"
     },
     "dependencies": {
         "@volar/typescript-language-service": "^0.40.13",

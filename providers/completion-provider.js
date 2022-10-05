@@ -15,6 +15,7 @@ function createCompletionProvider(program) {
                 var offset = document.offsetAt(position);
                 var oldText = document.getText();
                 var newText = inferJsDocForEventAtOffset(document, offset);
+                if (!newText) return null;
                 var textLengthAdded = newText.length - oldText.length;
                 var languageService = createLanguageService(
                     getLanguageServiceHostFromProgram(program, Object.fromEntries([[document.fileName, newText]]))

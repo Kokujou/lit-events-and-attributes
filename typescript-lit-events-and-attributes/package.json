@@ -1,9 +1,14 @@
 {
     "name": "typescript-lit-events-and-attributes",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "MIT",
     "main": "index.js",
     "dependencies": {
-        "typescript": "latest"
+        "fs": "^0.0.1-security",
+        "typescript": "latest",
+        "vscode": "^1.1.37",
+        "vscode-html-languageservice": "^5.0.2",
+        "vscode-languageserver-textdocument": "^1.0.7",
+        "web-component-analyzer": "^2.0.0-next.4"
     }
 }
